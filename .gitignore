@@ -1,0 +1,6 @@
+node_modules/*
+token.info
+package-lock.json
+ledger.yaml
+signup.txt
+tmp/*
