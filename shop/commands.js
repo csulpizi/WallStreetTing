@@ -1,10 +1,10 @@
 import * as bank from '../bank.js'
 import axios from 'axios';
 
-const nft_cost = 3
+const prices = {nft: 3}
 
 async function nft(message) {
-    if (bank.getCachedBalance(message.author.id) < nft_cost) {
+    if (bank.getCachedBalance(message.author.id) < prices.nft) {
         return "You're too poor"
     }
 
@@ -12,9 +12,9 @@ async function nft(message) {
     let pic = request.request.res.responseUrl
     
 
-    bank.send(message.author.id, "TINGZPORIUM SHOP", 3, "NFT Purchase: " + pic)
+    bank.send(message.author.id, "TINGZPORIUM SHOP", prices.nft, "NFT Purchase: " + pic)
     
     return pic + "\nPlease do not screenshot this!\nNew balance: " + bank.getCachedBalance(message.author.id) 
 }
 
-export { nft }
+export { prices, nft }

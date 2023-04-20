@@ -17,7 +17,9 @@ const help = "@me first, followed by the following commands + arguments:\n" +
 "- `history global`:\n" + 
 "    lists the transaction history of everyone.\n" + 
 "- `casino help`:\n" + 
-"    explains the casino's functionality\n" +
+"    explains the casino\n" +
+"- `shop help`:\n" + 
+"    explains the shop\n" +
 "- `help`:\n" +
 "    you're already here, dummy!"
 
