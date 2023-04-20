@@ -25,12 +25,8 @@ async function gif(message, args) {
 		apiKey: "0UTRbFtkMxAplrohufYco5IY74U8hOes",
 		rating: "r"
 	};
-    if (args.length == 1) {
-        opts.tag = args[0]
-    }
-
-    else if (args.length > 1) {
-        return "Too many arguments!"
+    if (args.length >= 1) {
+        opts.tag = args.join(" ")
     }
 
     if (bank.getCachedBalance(message.author.id) < prices.gif) {

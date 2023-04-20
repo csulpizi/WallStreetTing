@@ -2,7 +2,7 @@ import * as commands from './commands.js'
 
 const help = "Tingzporium Shop:\n" + 
     "- `nft`:\n" +
-    `  $${commands.prices.nft}: make a da nft` +
+    `  $${commands.prices.nft}: make a da nft\n` +
     "- `gif <some tag>`:\n" +
     `  $${commands.prices.gif}: post a gif. provide a tag (or don't) to get a gif related to that tag`
 
