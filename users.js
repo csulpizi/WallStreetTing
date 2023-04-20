@@ -2,25 +2,38 @@ const snowflakeRegex = /[0-9][0-9]*/
 
 const usernameCache = new Map()
 
-async function tryParseUser(guild, userid) {
-    if (usernameCache.has(userid))
-        return usernameCache.get(userid)
+async function tryParseUser(guild, userId) {
+    if (usernameCache.has(userId))
+        return usernameCache.get(userId)
 
     let r
-    if (guild && userid.match(snowflakeRegex)) {
+    if (guild && userId.match(snowflakeRegex)) {
         let member
         try {
-            member = await guild.members.fetch(userid)
+            member = await guild.members.fetch(userId)
         } catch {
             member = undefined
         }
 
-        r =  member?.user?.username ?? userid
+        r =  member?.user?.username ?? userId
     } else {
-        r = userid
+        r = userId
     }
-    usernameCache.set(userid, r)
+    usernameCache.set(userId, r)
     return r
 }
 
-export { tryParseUser }
+async function isNaturalBornCitizen(guild, userId) {
+    try {
+        await guild.members.fetch(userId)
+        return true
+    } catch {
+        return false
+    }
+}
+
+const shop = "TINGZPORIUM SHOP"
+const casino ="BIG BURLY CASINO BOUNCERS"
+const mint = "Royal Tingmenistan Mint"
+
+export { shop, casino, mint, tryParseUser, isNaturalBornCitizen }

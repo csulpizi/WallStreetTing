@@ -4,6 +4,7 @@ import { coerceInt } from '../coerce.js'
 import { v4 as uuid } from 'uuid';
 import fs from 'fs'
 import { MessagePayload } from 'discord.js';
+import * as users from '../users.js';
 
 const noteLimit = 800
 
@@ -36,7 +37,7 @@ async function send(message, args) {
     let resp = bank.send(message.author.id, recipient, amount, note)
     if (resp)
         return resp
-    
+
     if (overflowed)
         message.reply(`Your message was truncated to ${noteLimit} characters, this isn't a book club`)
     let plural = amount > 1 ? "s" : ""
@@ -55,9 +56,19 @@ function balance(message, args) {
     if (args.length == 0) {
         cached = bank.getCachedBalance(message.author.id)
     } else if (args.length == 1) {
-        if (!args[0].startsWith("<@") || !args[0].endsWith(">"))
+        let target
+        if (args[0] == "shop") {
+            target = users.shop
+        } else if (args[0] == "mint") {
+            target = users.mint
+        } else if (args[0] == "casino") {
+            target = users.casino
+        } else if (!args[0].startsWith("<@") || !args[0].endsWith(">")) {
             return "The user you specified doesn't appear to be a valid mention"
-        cached = bank.getCachedBalance(stripUser(args[0]))
+        } else {
+            target = stripUser(args[0])
+        }
+        cached = bank.getCachedBalance(target)
     } else {
         return "Invalid arguments provided: follow the form '@thisbot balance' for your own balance or '@thisbot balance @otherUser' for someone else's"
     }
@@ -73,9 +84,15 @@ async function history(message, args) {
     } else if (args.length == 1) {
         if (args[0] == "global") {
             target = "global"
-        } else if (!args[0].startsWith("<@") || !args[0].endsWith(">"))
+        } else if (args[0] == "shop") {
+            target = users.shop
+        } else if (args[0] == "mint") {
+            target = users.mint
+        } else if (args[0] == "casino") {
+            target = users.casino
+        } else if (!args[0].startsWith("<@") || !args[0].endsWith(">")) {
             return "The user you specified doesn't appear to be a valid mention"
-        else {
+        } else {
             target = stripUser(args[0])
         }
     } else {
@@ -106,7 +123,7 @@ function mint(message, args) {
         let recipient = stripUser(args[0])
         let amount = Number.parseInt(args[1])
         let note = args.slice(2).join(" ");
-        return bank.mint(recipient, amount, "Royal Tingmenistan Mint", note) ?? "✅"
+        return bank.mint(recipient, amount, users.mint, note) ?? "✅"
     } else {
         return "Fuck off."
     }
@@ -121,7 +138,7 @@ async function _signup(guild, userToSignUp) {
     }
 
     if (!user) {
-        
+
         return "Only natural-born Tingmenistan citizens can be signed up for the coin program"
     }
     return bank.signup(userToSignUp)

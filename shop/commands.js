@@ -1,6 +1,7 @@
 import * as bank from '../bank.js'
 import axios from 'axios';
 import querystring from 'node:querystring'; 
+import * as users from '../users.js';
 
 const prices = {nft: 3,
                 gif: 1}
@@ -14,7 +15,7 @@ async function nft(message) {
     let pic = request.request.res.responseUrl
     
 
-    bank.send(message.author.id, "TINGZPORIUM SHOP", prices.nft, "NFT Purchase: " + pic)
+    bank.send(message.author.id, users.shop, prices.nft, "NFT Purchase: " + pic)
     
     message.reply(pic)
     return "Please do not screenshot this!\nNew balance: " + bank.getCachedBalance(message.author.id) 
@@ -37,7 +38,7 @@ async function gif(message, args) {
     var request = await axios.get("https://api.giphy.com/v1/gifs/random?" + querystring.encode(opts))
     let gif = request.data.data.images.original.url
     
-    bank.send(message.author.id, "TINGZPORIUM SHOP", prices.gif, "Gif Purchase: " + gif)
+    bank.send(message.author.id, users.shop, prices.gif, "Gif Purchase: " + gif)
     return gif
 }
 

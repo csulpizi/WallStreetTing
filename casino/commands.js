@@ -1,6 +1,7 @@
 import { coerceInt } from "../coerce.js"
 import * as bank from "../bank.js"
 import { randInt } from "../common.js"
+import * as users from '../users.js';
 
 function playOdds(message, args, oddsAgainst) {
     console.log(args)
@@ -24,10 +25,10 @@ function playOdds(message, args, oddsAgainst) {
     
     let roll = randInt(oddsAgainst + 1)
     if (roll == 0) {
-        bank.mint(message.author.id, amount * oddsAgainst, "BIG BURLY CASINO BOUNCERS", "Casino winnings!")
+        bank.mint(message.author.id, amount * oddsAgainst, users.casino, "Casino winnings!")
         return 0
     } else {
-        bank.send(message.author.id, "BIG BURLY CASINO BOUNCERS", amount, "Casino losings...")
+        bank.send(message.author.id, users.casino, amount, "Casino losings...")
         return roll
     }
 }

@@ -2,7 +2,7 @@ import fs from 'fs';
 import * as yaml from 'yaml'
 import * as table from 'table'
 import { now } from './common.js'
-import { tryParseUser } from './users.js';
+import * as users from './users.js';
 
 const ledgerFile = "./ledger.yaml"
 const signupFile = "./signup.txt"
@@ -88,8 +88,8 @@ function getCachedBalance(userId) {
 }
 
 async function parseLedgerEntry(guild, entry) {
-    let sender = await tryParseUser(guild, entry.sender)
-    let recipient = await tryParseUser(guild, entry.recipient)
+    let sender = await users.tryParseUser(guild, entry.sender)
+    let recipient = await users.tryParseUser(guild, entry.recipient)
     return [sender, recipient, entry.amount, entry.ts, entry.message]
 }
 const ledgerConfig = {
@@ -126,7 +126,7 @@ function signup(user) {
         if (alreadySignedUp.has(user))
             return "Already signed up!"
         fs.appendFileSync(signupFile, "\n" + user)
-        return mint(user, signupAmount, "Royal Tingmenistan Mint", "Sign up bonus!")
+        return mint(user, signupAmount, users.mint, "Sign up bonus!")
     }
     finally {
         locks.delete(user)
