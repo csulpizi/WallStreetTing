@@ -14,7 +14,7 @@ async function nft(message) {
 
     bank.send(message.author.id, "TINGZPORIUM SHOP", 3, "NFT Purchase: " + pic)
     
-    return pic + "\nPlease do not screenshot this!"
+    return pic + "\nPlease do not screenshot this!\nNew balance: " + bank.getCachedBalance(message.author.id) 
 }
 
 export { nft }
