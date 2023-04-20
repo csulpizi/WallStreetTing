@@ -1,4 +1,5 @@
 import * as config from './config.js'
+import * as shop from './shop/switchboard.js'
 import * as casino from './casino/switchboard.js'
 import * as main from './main/switchboard.js'
 import { stripUser, cleanWhiteSpace } from './common.js';
@@ -37,6 +38,8 @@ async function switchboard(message) {
         switch (args[0]) {
             case "help": 
                 return help
+            case "shop":
+                return await shop.incoming(message, args.slice(1))
             case "casino":
                 return await casino.incoming(message, args.slice(1))
             default: 
