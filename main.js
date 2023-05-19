@@ -98,18 +98,29 @@ client.on('messageCreate', async function(message) {
     }
 })
 
+const reaccRateLimiter = new Map();
+
 client.on('messageReactionAdd', async function(messageReaction, user) {
     messageReaction = await messageReaction.fetch();
-    console.log("OHH A REACTION!", messageReaction.message?.author?.id, messageReaction.emoji?.name, user?.id, clientId);
     if (messageReaction.message.author.id != clientId) return;
     if (user.id == clientId) return;
     console.log("REACC", messageReaction.emoji.name);
+
+    let rateLimiterTag = user.id + "||" + messageReaction.message.id;
+    if (reaccRateLimiter.has(rateLimiterTag)) {
+        if (reaccRateLimiter.get(rateLimiterTag) + 5000 > Date.now())  {
+            console.log("User " + user.name + " has been emoji rate limited");
+            return;
+        }
+    } else {
+        reaccRateLimiter.set(rateLimiterTag, Date.now());
+    }
+
     try {
-        console.log(messageReaction.message.content.split("\n")[0]);
         let meta = readMetaData(messageReaction.message.id);
         let error = await onlytingz.reaccs(user, messageReaction.message, messageReaction.emoji, meta)
         if (error) {
-            messageReaction.message.reply(`<@${user.id}>: ${error}`);
+            await messageReaction.message.reply(`<@${user.id}>: ${error}`);
         }
     } catch (e) {
         console.error(e);
