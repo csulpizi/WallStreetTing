@@ -74,7 +74,7 @@ function balance(message, args) {
     }
 
     if (cached == 0) return "You're broke!"
-    return "" + cached
+    return `<@${message.author.id}>:` + cached
 }
 
 async function history(message, args) {
