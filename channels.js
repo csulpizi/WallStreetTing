@@ -3,6 +3,9 @@ import { client } from "./main.js";
 
 const channelLookup = new Map();
 
+// Main bot channel
+const wst_channel_id = "1098363373369962636";
+
 async function findChannel(channelId) {
     let guilds;
     console.log("Trying to find channel id " + channelId);
@@ -34,7 +37,7 @@ async function findChannel(channelId) {
     return null;
 }
 
-async function seedChannelLookup(client) {
+async function seedChannelLookup() {
     let guild = await client.guilds.fetch(serverId);
     let channelColl = await guild.channels.fetch();
     let promises = channelColl.map((v) => v.fetch().catch(() => null));
@@ -45,4 +48,8 @@ async function seedChannelLookup(client) {
     }
 }
 
-export { seedChannelLookup, findChannel }
+async function botChannel() {
+    return await findChannel(wst_channel_id);
+}
+
+export { seedChannelLookup, findChannel, botChannel }

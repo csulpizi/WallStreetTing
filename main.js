@@ -6,7 +6,7 @@ import * as onlytingz from './onlyfans/switchboard.js'
 import { stripUser, cleanWhiteSpace, isDm } from './common.js';
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
 import { readMetaData } from './metadata.js'
-import { seedChannelLookup } from './channels.js'
+import { botChannel, seedChannelLookup } from './channels.js'
 
 const help = "@me first, followed by the following commands + arguments:\n" +
 "- `send <@recipient> <amount> & anything you want to include as a message`:\n" +
@@ -91,7 +91,8 @@ client.on('messageCreate', async function(message) {
         if (r == "✅") {
             message.react("✅")
         } else if (r) {
-            message.reply("" + r)
+            let botChannel = await botChannel();
+            await botChannel.send("" + r);
         }
     } catch (e) {
         console.error(e)
