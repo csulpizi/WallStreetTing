@@ -4,9 +4,7 @@ import * as commands from './commands.js'
 const help = "For feet pics only!\n" +
 "- `post <channelId> <cost> ... content`:\n" +
 "    MUST BE SENT IN A DM TO WALLSTREETTING\n" +
-"    Post the content as an only tingz post, which people can pay <cost> to see\n" +
-"- `view <postingUser> <messageId>`:\n" + 
-"    Pay the cost of the post and see the message"
+"    Post the content as an only tingz post, which people can pay <cost> to see\n"
 
 // arguments: 
 //  e.g. the message @bot onlytingz a b c 
