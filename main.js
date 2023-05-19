@@ -23,7 +23,7 @@ const help = "@me first, followed by the following commands + arguments:\n" +
 "    explains the casino\n" +
 "- `shop help`:\n" + 
 "    explains the shop\n" +
-"- `onlytingz help:\n" +
+"- `onlytingz help`:\n" +
 "    explains onlytingz\n" +
 "- `help`:\n" +
 "    you're already here, dummy!"
