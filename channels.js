@@ -23,7 +23,7 @@ async function findChannel(channelId) {
         return null;
     }
     for (let i = 0; i < guilds.length ; i ++) {
-        let guild = guilds[0]
+        let guild = guilds[i]
         console.log(`Looking for chan ${channelId} in guild ${guild.name}`)
         try {
             let chan = await guild.channels.fetch(channelId);
