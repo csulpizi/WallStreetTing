@@ -91,8 +91,8 @@ client.on('messageCreate', async function(message) {
         if (r == "✅") {
             message.react("✅")
         } else if (r) {
-            let botChannel = await botChannel();
-            await botChannel.send("" + r);
+            let wst = await botChannel();
+            await wst.send("" + r);
         }
     } catch (e) {
         console.error(e)
