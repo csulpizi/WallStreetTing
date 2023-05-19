@@ -36,32 +36,4 @@ function isDm(message) {
     return message.channel instanceof DMChannel
 }
 
-async function findChannel(channelId) {
-    let guilds;
-    console.log("Trying to find channel id " + channelId);
-    try {
-        let promiseColl = await client.guilds.fetch();
-        let promises = promiseColl.map((v) => v.fetch());
-        guilds = await Promise.all(promises);
-        console.log("Successfully grabbed all the guilds! " + guilds.length);
-    } catch (e) {
-        console.error(e);
-        console.log("Failed!");
-        return null;
-    }
-    for (let i = 0; i < guilds.length ; i ++) {
-        let guild = guilds[0]
-        console.log(`Looking for chan ${channelId} in guild ${guild.name}`)
-        try {
-            let chan = await guild.channels.fetch(channelId);
-            if (chan) {
-                console.log("Found it!");
-                return chan;
-            }
-        } catch {}
-    }
-    console.log("Couldn't find it :(");
-    return null;
-}
-
-export { stripUser, cleanWhiteSpace, now, randInt, coerceInt, isDm, findChannel }
+export { stripUser, cleanWhiteSpace, now, randInt, coerceInt, isDm }

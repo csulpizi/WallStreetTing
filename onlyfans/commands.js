@@ -1,14 +1,19 @@
 import { send } from "../bank.js";
-import { cleanWhiteSpace, coerceInt, findChannel, stripUser } from "../common.js";
+import { cleanWhiteSpace, coerceInt, stripUser } from "../common.js";
 import { client, clientId } from "../main.js";
-import { saveMetaData, readMetaData } from "../metadata.js";
+import { saveMetaData } from "../metadata.js";
+import { findChannel } from "../channels.js";
 
-async function broadcastPost(ogMessage, cost, targetTextChannelObj) {
+async function broadcastPost(ogMessage, cost, targetTextChannelObj, caption) {
     let user = ogMessage.author;
     let meta = {type: "onlytingz",
                 id: ogMessage.id,
                 author: ogMessage.author.id};
-    let messageText = `<@${user.id}> has posted an OnlyTingz message. The message costs $${cost} to see.\n`;
+    let messageText = `<@${user.id}> has posted an OnlyTingz picture` ;
+    if (caption.length > 0) {
+        messageText += ` with the caption '${caption}'`; 
+    }
+    messageText += `.\nThe message costs $${cost} to see.\n`;
     messageText += `React with 👀 to view it.`;
     let msg = await targetTextChannelObj.send({content: messageText});
     saveMetaData(msg.id, meta)
@@ -20,16 +25,15 @@ function stripPost(ogMessage) {
     text = cleanWhiteSpace(text);
     let args = text.split(' ');
     console.log("Checking length...", args.length)
-    if (args.length < 5) return null;
-    console.log("Checking the og message is in fact sent to @me...", args[0], stripUser(args[0]), client.userId)
-    if (stripUser(args[0]) != clientId) return null;
-    console.log("Checking it is in fact an 'onlytingz' message", args[1])
-    if (args[1] != "onlytingz") return null;
-    console.log("Checking it is in fact a 'post' message", args[2])
-    if (args[2] != "post") return null;
-    // ignore arg 3 I guess
-    console.log("Checking the cost", args[4]);
-    let cost = parseInt(args[4]);
+    if (stripUser(args[0]) == clientId) args.slice(1);
+    if (args.length < 4) return null;
+    console.log("Checking it is in fact an 'onlytingz' message", args[0])
+    if (args[0] != "onlytingz") return null;
+    console.log("Checking it is in fact a 'post' message", args[1])
+    if (args[1] != "post") return null;
+    // ignore arg 2 I guess
+    console.log("Checking the cost", args[3]);
+    let cost = parseInt(args[3]);
     if (!Number.isInteger(cost)) return null;
     console.log("All good!");
     return {cost, 
@@ -37,12 +41,23 @@ function stripPost(ogMessage) {
             attachments: ogMessage.attachments.map((v) => v)};
 }
 
+const viewPostNonce = new Set();
+
 async function _viewPost(user, ogMessage) {
     let post = stripPost(ogMessage);
     if (!post) return "The referenced message is not a valid onlytingz post!";
+    let nonce = user.id + "|" + ogMessage.id;
+    if (viewPostNonce.has(nonce)) return;
     let error = send(user.id, ogMessage.author.id, post.cost, `onlytingz post \`${ogMessage.id}\``);
     if (error) return error;
-    await user.send({content: `<@${ogMessage.author.id}>'s onlytingz post:\n` + post.message, files: post.attachments});
+    try {
+        await user.send({content: `<@${ogMessage.author.id}>'s onlytingz post:\n` + post.message, files: post.attachments});
+    } catch (e) {
+        console.error(e);
+        send(ogMessage.author.id, user.id, post.cost, `onlytingz refund \`${ogMessage.id}\``);
+        return "Can't seem to be able to send you a direct message! Double check your server privacy settings allow dm's"
+    }
+    viewPostNonce.add(nonce);
 }
 
 async function makePost(message, args) {
@@ -53,7 +68,9 @@ async function makePost(message, args) {
     } catch {}
     if (!channel) return `Couldn't find channel ${args[0]}`
     let cost = coerceInt(args[1]);
-    await broadcastPost(message, cost, channel);
+    if (!message.attachments.first())
+        return "Needs at least one attachment!"
+    await broadcastPost(message, cost, channel, args.slice(2).join(' '));
 }
 
 async function viewPost(user, message, meta) {

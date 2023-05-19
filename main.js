@@ -3,9 +3,10 @@ import * as shop from './shop/switchboard.js'
 import * as casino from './casino/switchboard.js'
 import * as main from './main/switchboard.js'
 import * as onlytingz from './onlyfans/switchboard.js'
-import { stripUser, cleanWhiteSpace } from './common.js';
+import { stripUser, cleanWhiteSpace, isDm } from './common.js';
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
 import { readMetaData } from './metadata.js'
+import { seedChannelLookup } from './channels.js'
 
 const help = "@me first, followed by the following commands + arguments:\n" +
 "- `send <@recipient> <amount> & anything you want to include as a message`:\n" +
@@ -27,11 +28,16 @@ const help = "@me first, followed by the following commands + arguments:\n" +
 "- `help`:\n" +
 "    you're already here, dummy!"
 
+var clientId = null;
+
 async function switchboard(message) {
-    if (message.author.id == client.userId) 
+    if (message.author.id == clientId)
         return
 
     let messageContent = cleanWhiteSpace(message.content).split(" ")
+
+    if (isDm(message) && messageContent.length > 0 && stripUser(messageContent[0]) != client.user.id)
+        messageContent.unshift(client.user.id);
 
     if (messageContent.length > 0 && stripUser(messageContent[0]) == client.user.id) {
         console.log("Recieved a message!", messageContent)
@@ -73,10 +79,9 @@ const client = new Client({
     ]
 })
 
-var clientId = null;
-
 client.on('ready', () => {
     clientId = client.user.id;
+    seedChannelLookup(client);
     console.log(`Logged in as ${client.user.tag}!`);
 });
 
@@ -101,8 +106,8 @@ client.on('messageReactionAdd', async function(messageReaction, user) {
     console.log("REACC", messageReaction.emoji.name);
     try {
         console.log(messageReaction.message.content.split("\n")[0]);
-        let meta = readMetaData(message.id);
-        let error = await onlytingz.reaccs(user, message, messageReaction.emoji, meta)
+        let meta = readMetaData(messageReaction.message.id);
+        let error = await onlytingz.reaccs(user, messageReaction.message, messageReaction.emoji, meta)
         if (error) {
             messageReaction.message.reply(`<@${user.id}>: ${error}`);
         }
