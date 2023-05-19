@@ -78,8 +78,8 @@ function balance(message, args) {
         return `<@${message.author.id}>: Invalid arguments provided: follow the form '@thisbot balance' for your own balance or '@thisbot balance @otherUser' for someone else's`
     }
 
-    if (cached == 0) return "You're broke!"
-    return `<@${message.author.id}>:` + cached
+    if (cached == 0) return `<@${message.author.id}>: You're broke!`
+    return `<@${message.author.id}>: ` + cached
 }
 
 async function history(message, args) {

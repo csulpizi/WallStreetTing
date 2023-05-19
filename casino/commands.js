@@ -7,7 +7,7 @@ function playOdds(message, args, oddsAgainst) {
     console.log(args)
 
     if (args.length != 1) {
-        return "You must specify exactly one argument: an amount to bet"
+        return `<@${message.author.id}>: You must specify exactly one argument: an amount to bet`
     }
     let amountOrError = coerceInt(args[0])
     if (!Number.isInteger(amountOrError)) {
@@ -16,11 +16,11 @@ function playOdds(message, args, oddsAgainst) {
     let amount = amountOrError
 
     if (amount <= 0) {
-        return "Must be a positive number"
+        return `<@${message.author.id}>: Must be a positive number`
     }
 
     if (bank.getCachedBalance(message.author.id) < amount) {
-        return "You're too poor"
+        return `<@${message.author.id}>: You're too poor`
     }
     
     let roll = randInt(oddsAgainst + 1)

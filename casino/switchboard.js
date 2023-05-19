@@ -22,24 +22,26 @@ async function incoming(message, args) {
             if (!Number.isInteger(roll)) {
                 return roll 
             }
-            if (roll == 0) return "Heads! You win! New balance: " + bank.getCachedBalance(message.author.id)
-            return "Sorry, you flipped tails and lost!. New balance: " + bank.getCachedBalance(message.author.id)
+            if (roll == 0) return `<@${message.author.id}>: Heads! You win! New balance: ` + bank.getCachedBalance(message.author.id)
+            return `<@${message.author.id}>: Sorry, you flipped tails and lost!. New balance: ` + bank.getCachedBalance(message.author.id)
         case "dice":
             roll = commands.playOdds(message, args.slice(1), 5)
             if (!Number.isInteger(roll)) {
                 return roll 
             }
-            if (roll == 0) return `SIX! You win! New balance: ${bank.getCachedBalance(message.author.id)}`
-            return `Sorry, you only rolled a ${6 - roll}, you lose. New balance: ${bank.getCachedBalance(message.author.id)}`
+            if (roll == 0) return `<@${message.author.id}>: SIX! You win! New balance: ${bank.getCachedBalance(message.author.id)}`
+            return `<@${message.author.id}>: Sorry, you only rolled a ${6 - roll}, you lose. New balance: ${bank.getCachedBalance(message.author.id)}`
         case "lottery":
             roll = commands.playOdds(message, args.slice(1), 999)
             if (!Number.isInteger(roll)) {
                 return roll 
             }
-            if (roll == 0) return "HOLY FUCK YOU ACTUALLY WON!!!!>!?!?!?!?!??!?! New balance: " + bank.getCachedBalance(message.author.id)
-            return `Sorry, please play again. New balance: ${bank.getCachedBalance(message.author.id)}`
+            if (roll == 0) return `<@${message.author.id}>: HOLY FUCK YOU ACTUALLY WON!!!!>!?!?!?!?!??!?! New balance: ` + bank.getCachedBalance(message.author.id)
+            return `<@${message.author.id}>: Sorry, please play again. New balance: ${bank.getCachedBalance(message.author.id)}`
         case "help":
             return help
+        default: 
+            return `<@${message.author.id}>: Unknown command ${args[0]}`
     }
 }
 
