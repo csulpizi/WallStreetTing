@@ -5,19 +5,20 @@ import { v4 as uuid } from 'uuid';
 import fs from 'fs'
 import { MessagePayload } from 'discord.js';
 import * as users from '../users.js';
+import { botChannel } from '../channels.js';
 
 const noteLimit = 800
 
 async function send(message, args) {
     if (args.length < 2) {
-        return "Invalid arguments provided: follow the form '@thisbot send @userToSendTo amount (optional: & some message)'"
+        return `<@${message.author.id}>: Invalid arguments provided: follow the form '@thisbot send @userToSendTo amount (optional: & some message)'`
     }
     if (!args[0].startsWith("<@") || !args[0].endsWith(">")) {
-        return "The recipient you specified doesn't appear to be a valid mention"
+        return `<@${message.author.id}>: The recipient you specified doesn't appear to be a valid mention`
     }
     let recipient = stripUser(args[0])
     if (recipient == message.author.id)
-        return "Can't send money to yourself dummy"
+        return `<@${message.author.id}>: Can't send money to yourself dummy`
 
     let amountOrError = coerceInt(args[1])
     if (!Number.isInteger(amountOrError)) {
@@ -25,8 +26,10 @@ async function send(message, args) {
     }
     let amount = amountOrError
 
-    if (!await _signup(message.guild, recipient))
-        discordMessage?.reply(_signupCongrats(recipient))
+    if (!await _signup(message.guild, recipient)) {
+        let bc = await botChannel()
+        await bc.send(_signupCongrats(recipient))
+    }
 
     let note = args.slice(2).join(" ");
     let overflowed = note.length > noteLimit
@@ -38,8 +41,10 @@ async function send(message, args) {
     if (resp)
         return resp
 
-    if (overflowed)
-        message.reply(`Your message was truncated to ${noteLimit} characters, this isn't a book club`)
+    if (overflowed) {
+        let bc = botChannel()
+        await bc.send(`<@${message.author.id}>: Your message was truncated to ${noteLimit} characters, this isn't a book club`)
+    }
     let plural = amount > 1 ? "s" : ""
     resp = "Hey " + args[0] + "! <@" + message.author.id + "> just sent you " + amount + " coin" + plural
     if (note) {
@@ -64,13 +69,13 @@ function balance(message, args) {
         } else if (args[0] == "casino") {
             target = users.casino
         } else if (!args[0].startsWith("<@") || !args[0].endsWith(">")) {
-            return "The user you specified doesn't appear to be a valid mention"
+            return `<@${message.author.id}>: The user you specified doesn't appear to be a valid mention`
         } else {
             target = stripUser(args[0])
         }
         cached = bank.getCachedBalance(target)
     } else {
-        return "Invalid arguments provided: follow the form '@thisbot balance' for your own balance or '@thisbot balance @otherUser' for someone else's"
+        return `<@${message.author.id}>: Invalid arguments provided: follow the form '@thisbot balance' for your own balance or '@thisbot balance @otherUser' for someone else's`
     }
 
     if (cached == 0) return "You're broke!"
@@ -91,12 +96,12 @@ async function history(message, args) {
         } else if (args[0] == "casino") {
             target = users.casino
         } else if (!args[0].startsWith("<@") || !args[0].endsWith(">")) {
-            return "The user you specified doesn't appear to be a valid mention"
+            return `<@${message.author.id}>: The user you specified doesn't appear to be a valid mention`
         } else {
             target = stripUser(args[0])
         }
     } else {
-        return "Invalid arguments provided: follow the form '@thisbot balance' for your own balance or '@thisbot balance @otherUser' for someone else's"
+        return `<@${message.author.id}>: Invalid arguments provided: follow the form '@thisbot balance' for your own balance or '@thisbot balance @otherUser' for someone else's`
     }
 
     let filter = target == "global" ? m => true : m => m.sender == target || m.recipient == target
@@ -106,7 +111,8 @@ async function history(message, args) {
     fs.mkdirSync(dir, { recursive: true })
     fs.writeFileSync(file, table)
     let payload = new MessagePayload(message, { files: [file] });
-    message.reply(payload)
+    let bc = await botChannel();
+    await bc.send(payload)
     return null
 }
 
@@ -139,7 +145,7 @@ async function _signup(guild, userToSignUp) {
 
     if (!user) {
 
-        return "Only natural-born Tingmenistan citizens can be signed up for the coin program"
+        return `<@${message.author.id}>: Only natural-born Tingmenistan citizens can be signed up for the coin program`
     }
     return bank.signup(userToSignUp)
 }
@@ -154,11 +160,11 @@ async function signup(message, args) {
     }
     else if (args.length == 1) {
         if (!args[0].startsWith("<@") || !args[0].endsWith(">")) {
-            return "The user you specified doesn't appear to be a valid mention"
+            return `<@${message.author.id}>: The user you specified doesn't appear to be a valid mention`
         }
         return await _signup(message.guild, stripUser(args[0])) ?? _signupCongrats(stripUser(args[0]))
     }
-    return "Invalid arguments provided: follow the form '@thisbot signup' or '@thisbot signup @user'"
+    return `<@${message.author.id}>: Invalid arguments provided: follow the form '@thisbot signup' or '@thisbot signup @user'`
 }
 
 export { send, balance, history, mint, signup }

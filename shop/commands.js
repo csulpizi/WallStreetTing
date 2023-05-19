@@ -2,13 +2,14 @@ import * as bank from '../bank.js'
 import axios from 'axios';
 import querystring from 'node:querystring'; 
 import * as users from '../users.js';
+import { botChannel } from '../channels.js';
 
 const prices = {nft: 3,
                 gif: 1}
 
 async function nft(message) {
     if (bank.getCachedBalance(message.author.id) < prices.nft) {
-        return "You're too poor"
+        return `<@${message.author.id}>: You're too poor`
     }
 
     var request = await axios.get("https://picsum.photos/400/300")
@@ -17,8 +18,9 @@ async function nft(message) {
 
     bank.send(message.author.id, users.shop, prices.nft, "NFT Purchase: " + pic)
     
-    message.reply(pic)
-    return "Please do not screenshot this!\nNew balance: " + bank.getCachedBalance(message.author.id) 
+    let bc = await botChannel()
+    await bc.send(pic)
+    return `<@${message.author.id}>\nPlease do not screenshot this!\nNew balance: ` + bank.getCachedBalance(message.author.id) 
 }
 
 async function gif(message, args) {

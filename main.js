@@ -121,7 +121,8 @@ client.on('messageReactionAdd', async function(messageReaction, user) {
         let meta = readMetaData(messageReaction.message.id);
         let error = await onlytingz.reaccs(user, messageReaction.message, messageReaction.emoji, meta)
         if (error) {
-            await messageReaction.message.reply(`<@${user.id}>: ${error}`);
+            let bc = await botChannel();
+            await bc.send(`<@${user.id}>: ${error}`);
         }
     } catch (e) {
         console.error(e);
