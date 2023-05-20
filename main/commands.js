@@ -105,6 +105,7 @@ async function history(message, args) {
     }
 
     let filter = target == "global" ? m => true : m => m.sender == target || m.recipient == target
+    filter.slice(-10);
     let table = await bank.printLedger(message.guild, filter)
     let dir = "./tmp/" + uuid()
     let file = dir + "/history.txt"
